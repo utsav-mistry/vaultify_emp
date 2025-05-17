@@ -50,23 +50,24 @@ def auth():
             else:
                 hashed_password = generate_password_hash(password)
                 insert_user(email, name, hashed_password)
-
-                token = generate_token()
-                insert_auth_token(token, email)
-
-                approve_url = url_for("main.approve_token", token=token, _external=True)
-                discard_url = url_for("main.discard_token", token=token, _external=True)
-                login_url = url_for("main.login_token", token=token, _external=True)
-
+        
+                approval_token = generate_token()
+                login_token = generate_token()
+                insert_auth_token(email, approval_token, login_token)
+        
+                approve_url = url_for("main.approve_token", token=approval_token, _external=True)
+                discard_url = url_for("main.discard_token", token=approval_token, _external=True)
+                login_url = url_for("main.login_token", token=login_token, _external=True)
+        
                 admin_email_sent = send_admin_request_email(name, email, approve_url, discard_url)
                 user_email_sent = send_approval_status_mail(email, approved=False)
-
+        
                 if not admin_email_sent or not user_email_sent:
                     flash("Failed to send notification emails. Please contact admin.")
                     return render_template("auth.html")
-
+        
                 flash("Registration request sent. Await approval.")
-
+        
     return render_template("auth.html")
 
 # -------------------------
@@ -75,13 +76,13 @@ def auth():
 
 @main.route('/login/<token>', methods=['GET'])
 def login_token(token):
-    token_entry = get_auth_token(token)
+    token_entry = get_auth_token_by_login(token)
 
     if not token_entry:
         flash("Invalid token.", "danger")
         return redirect(url_for("main.auth"))
 
-    if token_entry.used:
+    if token_entry.login_used:
         flash("This token has already been used.", "danger")
         return redirect(url_for("main.auth"))
 
@@ -94,14 +95,13 @@ def login_token(token):
         flash("User not approved or does not exist.", "danger")
         return redirect(url_for("main.auth"))
 
-
     session["email"] = user.email
     session["user_id"] = user.id
-    token_entry.used = True
-    db.session.commit()
+    mark_login_token_used(token)
 
     flash("Logged in successfully!", "success")
     return redirect(url_for("main.landing"))
+
 
 
 # -------------------------
@@ -122,15 +122,15 @@ def submit_approval():
     email = request.form.get('email')
     designation = request.form.get('designation')
 
-    auth_token = get_auth_token(token)
-    if not auth_token or auth_token.used:
+    auth_token = get_auth_token_by_approval(token)
+    if not auth_token or auth_token.approval_used:
         flash("Invalid or expired token.", "danger")
         return redirect(url_for("main.auth"))
 
-    mark_token_used(token, approved=True)
+    mark_approval_token_used(token, approved=True)
     approve_user(email, designation)
 
-    login_url = url_for("main.login_token", token=token, _external=True)
+    login_url = url_for("main.login_token", token=auth_token.login_token, _external=True)
     send_approval_status_mail(email, approved=True, login_url=login_url)
 
     flash("User approved. Login link sent to their email.", "success")
@@ -138,18 +138,20 @@ def submit_approval():
 
 
 
+
 @main.route("/discard/<token>")
 def discard_token(token):
-    auth_link = get_auth_token(token)
-    if not auth_link or auth_link.used:
+    auth_token = get_auth_token_by_approval(token)
+    if not auth_token or auth_token.approval_used:
         return "Invalid or already used discard link."
 
-    email = auth_link.user_email
+    email = auth_token.user_email
     discard_user(email)
-    mark_token_used(token, approved=False)
+    mark_approval_token_used(token, approved=False)
 
     send_approval_status_mail(email, approved=False)
     return "User discarded and notified."
+
 
 
 # -------------------------
