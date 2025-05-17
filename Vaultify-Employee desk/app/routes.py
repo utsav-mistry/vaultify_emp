@@ -72,7 +72,7 @@ def auth():
 # One-time token login
 # -------------------------
 
-@app.route('/login/<token>', methods=['GET'])
+@main.route('/login/<token>', methods=['GET'])
 def login_token(token):
     token_entry = get_auth_token(token)
 
