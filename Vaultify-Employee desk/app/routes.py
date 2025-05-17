@@ -33,6 +33,7 @@ def auth():
             if user and user.approved:
                 if check_password_hash(user.password, password):
                     session["email"] = email
+                    session["user_id] = user.id
                     return redirect(url_for("main.landing"))
                 else:
                     flash("Incorrect password.")
@@ -76,12 +77,10 @@ def auth():
 def login_token(token):
     token_entry = get_auth_token(token)
 
-    # Check if token exists
     if not token_entry:
         flash("Invalid token.", "danger")
-        return redirect(url_for("auth"))
+        return redirect(url_for("main.auth"))
 
-    # Check if token already used or expired
     if token_entry.used:
         flash("This token has already been used.", "danger")
         return redirect(url_for("main.auth"))
@@ -90,14 +89,14 @@ def login_token(token):
         flash("This token has expired.", "danger")
         return redirect(url_for("main.auth"))
 
-    # Get the associated user
     user = User.query.filter_by(email=token_entry.user_email).first()
     if not user or not user.approved:
         flash("User not approved or does not exist.", "danger")
         return redirect(url_for("main.auth"))
 
-    # Log the user in (save in session)
-    session['user_id'] = user.id
+
+    session["email"] = user.email
+    session["user_id"] = user.id
     token_entry.used = True
     db.session.commit()
 
@@ -169,11 +168,13 @@ def logout():
 
 @main.route("/landing", methods=["GET"])
 def landing():
-    if "email" not in session:
+    if "user_id" not in session:
         return redirect(url_for("main.auth"))
 
-    email = session["email"]
-    user = get_user_by_email(email)
+    user = User.query.get(session["user_id"])
+    if not user:
+        session.clear()
+        return redirect(url_for("main.auth"))
 
     chats = get_all_chats()
     for chat in chats:
@@ -183,6 +184,7 @@ def landing():
     pending_requests = get_pending_users() if user.designation == "superuser" else []
 
     return render_template("landing.html", user=user, chats=chats, requests=pending_requests)
+
 
 
 # -------------------------
