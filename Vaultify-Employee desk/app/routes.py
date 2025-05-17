@@ -33,7 +33,6 @@ def auth():
             if user and user.approved:
                 if check_password_hash(user.password, password):
                     session["email"] = email
-                    session["user_id"] = user.id
                     return redirect(url_for("main.landing"))
                 else:
                     flash("Incorrect password.")
