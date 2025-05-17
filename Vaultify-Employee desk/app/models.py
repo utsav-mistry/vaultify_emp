@@ -14,8 +14,6 @@ class User(db.Model):
 from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
-
 class AuthToken(db.Model):
     __tablename__ = 'auth_links'
 
