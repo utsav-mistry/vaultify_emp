@@ -153,11 +153,21 @@ def get_pending_users():
     return User.query.filter_by(approved=False).all()
 
 # --- Chat Logic ---
-def insert_chat(sender_id, message, file_url=None):
-    chat = Chat(sender_id=sender_id, message=message, file_url=file_url)
-    db.session.add(chat)
-    db.session.commit()
-    return chat
+def insert_chat(message, file_data, sender_id):
+    try:
+        chat = Chat(
+            sender_id=sender_id,
+            message=message if message else None,
+            file_url=file_data["url"] if file_data else None,
+            timestamp=datetime.utcnow()
+        )
+        db.session.add(chat)
+        db.session.commit()
+        return chat
+    except Exception as e:
+        print(f"Error inserting chat: {e}")
+        db.session.rollback()
+        return None
 
 def get_all_chats():
     return db.session.query(Chat).order_by(Chat.timestamp.asc()).all()
