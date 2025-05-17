@@ -117,19 +117,26 @@ def approve_token(token):
     return render_template("approve_input.html", email=auth_link.user_email, token=token)
 
 
-@main.route("/approve/submit", methods=["POST"])
+@main.route('/submit_approval', methods=['POST'])
 def submit_approval():
-    token = request.form["token"]
-    email = request.form["email"]
-    designation = request.form["designation"]
+    token = request.form.get('token')
+    email = request.form.get('email')
+    designation = request.form.get('designation')
 
-    approve_user(email, designation)
+    auth_token = get_auth_token(token)
+    if not auth_token or auth_token.used:
+        flash("Invalid or expired token.", "danger")
+        return redirect(url_for("main.auth"))
+
     mark_token_used(token, approved=True)
+    approve_user(email, designation)
 
-    login_url = url_for("main.token_login", token=token, _external=True)
+    login_url = url_for("main.login_token", token=token, _external=True)
     send_approval_status_mail(email, approved=True, login_url=login_url)
 
-    return "User approved and notified."
+    flash("User approved. Login link sent to their email.", "success")
+    return redirect(url_for("main.auth"))
+
 
 
 @main.route("/discard/<token>")
