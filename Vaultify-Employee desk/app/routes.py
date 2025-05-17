@@ -55,7 +55,7 @@ def auth():
 
                 approve_url = url_for("main.approve_token", token=token, _external=True)
                 discard_url = url_for("main.discard_token", token=token, _external=True)
-                login_url = url_for("main.token_login", token=token, _external=True)
+                login_url = url_for("main.login_token", token=token, _external=True)
 
                 admin_email_sent = send_admin_request_email(name, email, approve_url, discard_url)
                 user_email_sent = send_approval_status_mail(email, approved=False)
