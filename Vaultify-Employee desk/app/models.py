@@ -12,12 +12,17 @@ class User(db.Model):
     designation = db.Column(db.String(120), default="")
 
 class AuthToken(db.Model):
-    __tablename__ = "auth_links"
+    __tablename__ = 'auth_links'
 
-    token = db.Column(db.String(255), primary_key=True)
-    user_email = db.Column(db.String(120), db.ForeignKey('users.email'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(64), unique=True, nullable=False)
+    user_email = db.Column(db.String(120), nullable=False)
     used = db.Column(db.Boolean, default=False)
-    approved = db.Column(db.Boolean, default=False)
+    approved = db.Column(db.Boolean, default=None)  # True / False / None
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def is_expired(self, expiry_minutes=1440):  # 24 hours default
+        return self.used or (datetime.utcnow() > self.created_at + timedelta(minutes=expiry_minutes))
 
 class Chat(db.Model):
     __tablename__ = "chats"
