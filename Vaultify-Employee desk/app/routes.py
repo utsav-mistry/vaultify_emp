@@ -168,10 +168,10 @@ def logout():
 
 @main.route("/landing", methods=["GET"])
 def landing():
-    if "user_id" not in session:
+    if "email" not in session:
         return redirect(url_for("main.auth"))
 
-    user = User.query.get(session["user_id"])
+    user = get_user_by_email(session["email"])
     if not user:
         session.clear()
         return redirect(url_for("main.auth"))
