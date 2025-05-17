@@ -201,7 +201,8 @@ def send_approval_status_mail(email, approved=True, login_url=None):
     return send_email(email, subject, body)
 
 
-# --- DB Actions (unchanged) ---
+# --- DB Actions (UPDATED) ---
+
 def insert_user(email, name, hashed_password):
     user = User(email=email, name=name, password=hashed_password)
     db.session.add(user)
@@ -226,21 +227,49 @@ def discard_user(email):
 def get_pending_users():
     return User.query.filter_by(approved=False).all()
 
-def insert_auth_token(token, email):
-    entry = AuthToken(token=token, user_email=email)
+# --- NEW Auth Token Logic ---
+
+import secrets
+from .models import AuthToken
+
+def generate_token():
+    return secrets.token_urlsafe(32)
+
+def insert_auth_token(email):
+    approval_token = generate_token()
+    login_token = generate_token()
+
+    entry = AuthToken(
+        user_email=email,
+        approval_token=approval_token,
+        login_token=login_token,
+        approval_used=False,
+        login_used=False
+    )
     db.session.add(entry)
     db.session.commit()
     return entry
 
-def get_auth_token(token):
-    return AuthToken.query.filter_by(token=token).first()
+def get_auth_token_by_approval(token):
+    return AuthToken.query.filter_by(approval_token=token).first()
 
-def mark_token_used(token, approved):
-    auth = get_auth_token(token)
-    if auth:
-        auth.used = True
+def get_auth_token_by_login(token):
+    return AuthToken.query.filter_by(login_token=token).first()
+
+def mark_approval_token_used(token, approved):
+    auth = get_auth_token_by_approval(token)
+    if auth and not auth.approval_used:
+        auth.approval_used = True
         auth.approved = approved
         db.session.commit()
+
+def mark_login_token_used(token):
+    auth = get_auth_token_by_login(token)
+    if auth and not auth.login_used:
+        auth.login_used = True
+        db.session.commit()
+
+# --- Chat Logic (unchanged) ---
 
 def insert_chat(sender_id, message, file_url=None):
     chat = Chat(sender_id=sender_id, message=message, file_url=file_url)
@@ -251,7 +280,12 @@ def insert_chat(sender_id, message, file_url=None):
 def get_all_chats():
     return db.session.query(Chat).order_by(Chat.timestamp.asc()).all()
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'xls', 'xlsx'}
+# --- File Upload Filter ---
+
+ALLOWED_EXTENSIONS = {
+    'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif',
+    'doc', 'docx', 'xls', 'xlsx'
+}
 
 def allowed_file(filename):
     return '.' in filename and \
