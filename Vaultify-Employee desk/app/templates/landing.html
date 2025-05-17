@@ -129,13 +129,6 @@
                                             <p class="mb-1">{{ chat.message }}</p>
                                             {% endif %}
                                             {% if chat.file_url %}
-                                            <div class="file-attachment mt-2">
-                                                <a href="{{ chat.file_url }}" target="_blank"
-                                                    class="text-decoration-none">
-                                                    <i class="fas fa-file me-2"></i>
-                                                    <span class="file-name">{{ chat.file_url.split('/')[-1] }}</span>
-                                                </a>
-                                            </div>
                                             {% endif %}
                                         </div>
                                     </div>
