@@ -10,10 +10,6 @@ def init_supabase():
 def generate_token():
     return secrets.token_urlsafe(32)
 
-# -----------------------------
-# Email Handling
-# -----------------------------
-
 def send_email(to_email, subject, html_content):
     try:
         msg = Message(subject, recipients=[to_email], html=html_content)
@@ -29,22 +25,65 @@ def send_admin_request_email(name, email, approve_url, discard_url):
     <html>
     <head>
         <style>
-            body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; }}
-            .container {{ background-color: #fff; max-width: 600px; margin: 30px auto; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }}
-            .header {{ text-align: center; font-size: 20px; font-weight: bold; color: #333; margin-bottom: 20px; }}
-            .details {{ font-size: 16px; color: #555; line-height: 1.5; margin-bottom: 30px; }}
-            .actions {{ text-align: center; }}
-            .button {{ padding: 10px 20px; border-radius: 5px; text-decoration: none; color: #fff; font-weight: bold; margin: 0 10px; display: inline-block; }}
-            .approve {{ background-color: #28a745; }}
-            .discard {{ background-color: #dc3545; }}
-            .footer {{ font-size: 12px; color: #888; text-align: center; margin-top: 30px; }}
+            body {{
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }}
+            .container {{
+                background-color: #ffffff;
+                max-width: 600px;
+                margin: 30px auto;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            }}
+            .header {{
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 20px;
+            }}
+            .details {{
+                font-size: 16px;
+                color: #555;
+                line-height: 1.5;
+                margin-bottom: 30px;
+            }}
+            .actions {{
+                text-align: center;
+            }}
+            .button {{
+                padding: 10px 20px;
+                border-radius: 5px;
+                text-decoration: none;
+                color: #fff;
+                font-weight: bold;
+                margin: 0 10px;
+                display: inline-block;
+            }}
+            .approve {{
+                background-color: #28a745;
+            }}
+            .discard {{
+                background-color: #dc3545;
+            }}
+            .footer {{
+                font-size: 12px;
+                color: #888;
+                text-align: center;
+                margin-top: 30px;
+            }}
         </style>
     </head>
     <body>
         <div class="container">
             <div class="header">📨 Vaultify Access Request</div>
             <div class="details">
-                <p><strong>Name:</strong> {name}<br><strong>Email:</strong> {email}</p>
+                <p><strong>Name:</strong> {name}<br>
+                <strong>Email:</strong> {email}</p>
             </div>
             <div class="actions">
                 <a href="{approve_url}" class="button approve">Approve</a>
@@ -66,12 +105,43 @@ def send_approval_status_mail(email, approved=True, login_url=None):
         <html>
         <head>
             <style>
-                body {{ font-family: Arial, sans-serif; background-color: #f9f9f9; }}
-                .container {{ max-width: 600px; margin: 30px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); text-align: center; }}
-                h3 {{ color: #28a745; }}
-                p {{ color: #333; font-size: 16px; }}
-                .button {{ display: inline-block; padding: 10px 20px; margin-top: 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }}
-                .footer {{ margin-top: 30px; font-size: 12px; color: #999; }}
+                body {{
+                    font-family: Arial, sans-serif;
+                    background-color: #f9f9f9;
+                    margin: 0;
+                    padding: 0;
+                }}
+                .container {{
+                    max-width: 600px;
+                    margin: 30px auto;
+                    background-color: #ffffff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                }}
+                h3 {{
+                    color: #28a745;
+                }}
+                p {{
+                    color: #333;
+                    font-size: 16px;
+                }}
+                .button {{
+                    display: inline-block;
+                    padding: 10px 20px;
+                    margin-top: 15px;
+                    background-color: #007bff;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    font-weight: bold;
+                }}
+                .footer {{
+                    margin-top: 30px;
+                    font-size: 12px;
+                    color: #999;
+                }}
             </style>
         </head>
         <body>
@@ -90,11 +160,33 @@ def send_approval_status_mail(email, approved=True, login_url=None):
         <html>
         <head>
             <style>
-                body {{ font-family: Arial, sans-serif; background-color: #f9f9f9; }}
-                .container {{ max-width: 600px; margin: 30px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); text-align: center; }}
-                h3 {{ color: #dc3545; }}
-                p {{ color: #555; font-size: 16px; }}
-                .footer {{ margin-top: 30px; font-size: 12px; color: #999; }}
+                body {{
+                    font-family: Arial, sans-serif;
+                    background-color: #f9f9f9;
+                    margin: 0;
+                    padding: 0;
+                }}
+                .container {{
+                    max-width: 600px;
+                    margin: 30px auto;
+                    background-color: #ffffff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                }}
+                h3 {{
+                    color: #dc3545;
+                }}
+                p {{
+                    color: #555;
+                    font-size: 16px;
+                }}
+                .footer {{
+                    margin-top: 30px;
+                    font-size: 12px;
+                    color: #999;
+                }}
             </style>
         </head>
         <body>
@@ -108,10 +200,8 @@ def send_approval_status_mail(email, approved=True, login_url=None):
         """
     return send_email(email, subject, body)
 
-# -----------------------------
-# DB Actions
-# -----------------------------
 
+# --- DB Actions (unchanged) ---
 def insert_user(email, name, hashed_password):
     user = User(email=email, name=name, password=hashed_password)
     db.session.add(user)
@@ -145,16 +235,14 @@ def insert_auth_token(token, email):
 def get_auth_token(token):
     return AuthToken.query.filter_by(token=token).first()
 
-def mark_token_used(token, approved=None):
+def mark_token_used(token, approved):
     auth = get_auth_token(token)
     if auth:
         auth.used = True
-        if approved is not None:
-            auth.approved = approved
+        auth.approved = approved
         db.session.commit()
 
-def insert_chat(sender_id, message, file_data=None):
-    file_url = file_data["url"] if file_data else None
+def insert_chat(sender_id, message, file_url=None):
     chat = Chat(sender_id=sender_id, message=message, file_url=file_url)
     db.session.add(chat)
     db.session.commit()
@@ -166,4 +254,5 @@ def get_all_chats():
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'xls', 'xlsx'}
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
