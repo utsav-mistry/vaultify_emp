@@ -175,31 +175,6 @@ def send_message():
             return jsonify({"success": False, "error": "User not found"}), 404
 
         message = request.form.get("message", "").strip()
-        file = request.files.get("file")
-
-        # Validate input
-        if not message and not file:
-            return jsonify({"success": False, "error": "Message or file required"}), 400
-
-        file_data = None
-        if file and file.filename:
-            # Validate file
-            filename = secure_filename(file.filename)
-            if not allowed_file(filename):
-                return jsonify({"success": False, "error": "File type not allowed"}), 400
-
-            # Check file size
-            file.seek(0, os.SEEK_END)
-            file_size = file.tell()
-            if file_size > MAX_FILE_SIZE:
-                return jsonify({"success": False, "error": "File too large (max 100MB)"}), 400
-            file.seek(0)
-
-            # Save file
-            save_path = os.path.join(UPLOAD_FOLDER, filename)
-            file.save(save_path)
-            file_url = url_for('static', filename=f'uploads/{filename}', _external=True)
-            file_data = {"url": file_url, "name": filename}
 
         # Create chat entry
         chat = insert_chat(user.id, message, file_data)
