@@ -232,7 +232,7 @@ def send_message():
             file_data = {"url": file_url, "name": filename}
 
         # Create chat entry
-        chat = insert_chat(user.id, message, file_data)
+        chat = insert_chat(message, file_data)
         if not chat:
             return jsonify({"success": False, "error": "Failed to save message"}), 500
 
