@@ -111,7 +111,7 @@ def login_token(token):
 @main.route("/approve/<token>")
 def approve_token(token):
     auth_link = get_auth_token_by_approval(token)
-    if not auth_link or auth_link.used:
+    if not auth_link or auth_link.approval_used:
         return "Invalid or already used approval link."
     return render_template("approve_input.html", email=auth_link.user_email, token=token)
 
