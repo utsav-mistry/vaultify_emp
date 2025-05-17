@@ -109,20 +109,12 @@ def login_token(token):
 # Admin Approve / Discard
 # -------------------------
 
-@app.route('/approve/<token>')
-def approve(token):
-    auth_token = get_auth_token(token)
-    if not auth_token or auth_token.used:
-        flash("Invalid or expired token.", "danger")
-        return redirect(url_for("main.auth"))
-
-    mark_token_used(token, approved=True)
-    approve_user(auth_token.user_email, designation="employee")
-    login_url = url_for("main.login_token", token=token, _external=True)
-    send_approval_status_mail(auth_token.user_email, approved=True, login_url=login_url)
-    flash("User approved successfully. Email sent.", "success")
-    return redirect(url_for("main.auth"))
-
+@main.route("/approve/<token>")
+def approve_token(token):
+    auth_link = get_auth_token(token)
+    if not auth_link or auth_link.used:
+        return "Invalid or already used approval link."
+    return render_template("approve_input.html", email=auth_link.user_email, token=token)
 
 
 @main.route("/approve/submit", methods=["POST"])
