@@ -47,3 +47,4 @@ class Chat(db.Model):
     message = db.Column(db.Text, nullable=True)
     file_url = db.Column(db.String(255), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    sender = db.relationship("User", backref="chats", foreign_keys=[sender_id])
