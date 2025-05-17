@@ -95,7 +95,7 @@ def send_approval_status_mail(email, approved=True, login_url=None):
 
 # --- Auth Token Logic ---
 def insert_auth_token(email, approval_token, login_token):
-    new_token = AuthLink(
+    new_token = AuthToken(
         user_email=email,
         approval_token=approval_token,
         login_token=login_token,
