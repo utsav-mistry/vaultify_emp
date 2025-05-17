@@ -96,7 +96,6 @@ def login_token(token):
         return redirect(url_for("main.auth"))
 
     session["email"] = user.email
-    session["user_id"] = user.id
     mark_login_token_used(token)
 
     flash("Logged in successfully!", "success")
