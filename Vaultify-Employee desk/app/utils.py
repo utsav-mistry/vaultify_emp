@@ -94,20 +94,19 @@ def send_approval_status_mail(email, approved=True, login_url=None):
     return send_email(email, subject, body)
 
 # --- Auth Token Logic ---
-def insert_auth_token(email):
-    approval_token = generate_token()
-    login_token = generate_token()
-    entry = AuthToken(
+def insert_auth_token(email, approval_token, login_token):
+    new_token = AuthLink(
         user_email=email,
         approval_token=approval_token,
         login_token=login_token,
         approval_used=False,
         login_used=False,
-        created_at=datetime.utcnow()
+        approved=None
     )
-    db.session.add(entry)
+    db.session.add(new_token)
     db.session.commit()
-    return entry
+    return new_token
+
 
 def get_auth_token_by_approval(token):
     return AuthToken.query.filter_by(approval_token=token).first()
