@@ -7,6 +7,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #2a5a8d;
+            --secondary-color: #6c757d;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
         .chat-container {
             height: 70vh;
             display: flex;
@@ -16,31 +26,43 @@
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            background: #f8f9fa;
+            background: #ffffff;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
         }
 
         .message-card {
-            background: white;
+            background: #f8f9fa;
             border-radius: 12px;
             padding: 12px 16px;
             margin-bottom: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid #dee2e6;
+        }
+
+        .message-card.self {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
         }
 
         .message-header {
-            font-size: 0.9rem;
-            color: #6c757d;
+            font-size: 0.85rem;
+            color: var(--secondary-color);
             margin-bottom: 4px;
         }
 
+        .message-card.self .message-header {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
         .file-attachment {
-            background: #e9ecef;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 6px;
             padding: 8px;
             margin-top: 8px;
+            border: 1px solid #dee2e6;
         }
 
         .profile-icon {
@@ -61,75 +83,64 @@
             white-space: nowrap;
         }
 
-        body {
-            background-color: #1b263b;
-            color: #f8f9fa;
-        }
-
-        .card {
-            background-color: #2c3e50;
-            color: #f8f9fa;
-        }
-
-        .chat-messages {
-            background-color: #34495e;
-        }
-
-        .message-card {
-            background: #3d566e;
-            color: #f8f9fa;
-        }
-
-        .message-card.self {
-            background: #1e7e34;
-            color: #ffffff;
-        }
-
-        .file-attachment {
-            background: #5d6d7e;
-            color: #f8f9fa;
-        }
-
-        .profile-icon {
-            background: #5c6b7c;
-        }
-
         .navbar {
-            background-color: #0d1b2a;
+            background-color: #1a1a2e !important;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
         }
 
         .nav-tabs .nav-link {
-            color: #ced4da;
+            color: var(--secondary-color);
+            border: none;
         }
 
         .nav-tabs .nav-link.active {
-            background-color: #0d6efd;
-            color: #fff;
-            border-color: transparent;
+            background-color: var(--primary-color) !important;
+            color: white !important;
+            border-radius: 6px;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
         }
 
         .list-group-item {
-            background-color: #2c3e50;
-            color: #f8f9fa;
-            border: 1px solid #3c4f65;
+            background-color: white;
+            color: #495057;
+            border: 1px solid #dee2e6;
         }
 
         .alert-info {
-            background-color: #3c6382;
-            color: #dff9fb;
-            border: none;
+            background-color: #e3f2fd;
+            color: var(--primary-color);
+            border: 1px solid #bbdefb;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-light {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-outline-light:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
         }
     </style>
-
 </head>
 
 <body>
     <script>
-    const currentUserEmail = "{{ session['email'] }}";
+        const currentUserEmail = "{{ session['email'] }}";
     </script>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 shadow-lg">
+    <nav class="navbar navbar-expand-lg navbar-dark px-3">
         <div class="container-fluid">
             <a class="navbar-brand fs-4 fw-bold" href="#">
                 <i class="fas fa-vault me-2"></i>Vaultify
@@ -147,27 +158,24 @@
 
     <!-- Main Content -->
     <div class="container mt-4">
-        <div class="card border-0 shadow-lg">
-            <div class="card-header bg-dark border-bottom border-secondary">
+        <div class="card border-0">
+            <div class="card-header bg-white border-bottom">
                 <ul class="nav nav-tabs card-header-tabs gap-2" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active d-flex align-items-center gap-2" id="chat-tab"
-                            data-bs-toggle="tab" data-bs-target="#chat">
+                        <button class="nav-link active d-flex align-items-center gap-2" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat-pane">
                             <i class="fas fa-comments fa-fw"></i>
                             <span class="d-none d-md-block">Channel</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link d-flex align-items-center gap-2" id="profile-tab" data-bs-toggle="tab"
-                            data-bs-target="#profile">
+                        <button class="nav-link d-flex align-items-center gap-2" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-pane">
                             <i class="fas fa-user fa-fw"></i>
                             <span class="d-none d-md-block">Profile</span>
                         </button>
                     </li>
                     {% if user.email == 'utsavamistry30@gmail.com' %}
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link d-flex align-items-center gap-2" id="requests-tab" data-bs-toggle="tab"
-                            data-bs-target="#requests">
+                        <button class="nav-link d-flex align-items-center gap-2" id="requests-tab" data-bs-toggle="tab" data-bs-target="#requests-pane">
                             <i class="fas fa-clipboard-list fa-fw"></i>
                             <span class="d-none d-md-block">Requests</span>
                         </button>
@@ -176,35 +184,27 @@
                 </ul>
             </div>
 
-            <div class="card-body p-4 bg-secondary bg-opacity-10">
+            <div class="card-body p-4">
                 <div class="tab-content">
                     <!-- Chat Tab -->
-                    <div class="tab-pane fade show active" id="chat">
+                    <div class="tab-pane fade show active" id="chat-pane">
                         <div class="chat-container">
-                            <div class="chat-messages shadow-sm" id="chat-list">
+                            <div class="chat-messages" id="chat-list">
                                 {% for chat in chats %}
                                 {% set is_self = (chat.sender_id == user.email) %}
-                                <div
-                                    class="d-flex mb-3 {{ 'justify-content-end' if is_self else 'justify-content-start' }}">
-                                    <div class="message-card p-3 border-0 shadow-sm rounded-3
-                                    {{ 'bg-primary text-white' if is_self else 'bg-dark text-white' }}"
-                                        style="max-width: 80%">
-                                        <div class="message-header d-flex justify-content-between 
-                                        align-items-center mb-2 text-white-50 small">
+                                <div class="d-flex mb-3 {% if is_self %}justify-content-end{% else %}justify-content-start{% endif %}">
+                                    <div class="message-card{% if is_self %} self{% endif %} p-3 shadow-sm" style="max-width: 80%">
+                                        <div class="message-header d-flex justify-content-between align-items-center small">
                                             <strong>{{ 'You' if is_self else chat.sender_id }}</strong>
-                                            <span>
-                                                {{ chat.timestamp.strftime('%Y-%m-%d %H:%M:%S') if chat.timestamp }}
-                                            </span>
+                                            <span>{{ chat.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
                                         </div>
                                         <div class="message-content">
                                             {% if chat.message %}
                                             <p class="mb-2">{{ chat.message }}</p>
                                             {% endif %}
                                             {% if chat.file_url %}
-                                            <div class="file-attachment mt-2 p-2 rounded-2 
-                                            {{ 'bg-primary bg-opacity-25' if is_self else 'bg-dark' }}">
-                                                <a href="{{ chat.file_url }}" target="_blank" class="text-decoration-none d-flex align-items-center gap-2
-                                                {{ 'text-white' if is_self else 'text-white-50' }}">
+                                            <div class="file-attachment">
+                                                <a href="{{ chat.file_url }}" target="_blank" class="text-decoration-none d-flex align-items-center gap-2 {% if is_self %}text-white{% else %}text-primary{% endif %}">
                                                     <i class="fas fa-file fa-fw"></i>
                                                     <span class="file-name">{{ chat.file_url.split('/')[-1] }}</span>
                                                 </a>
@@ -216,20 +216,14 @@
                                 {% endfor %}
                             </div>
 
-                            <form id="chat-form" method="POST" enctype="multipart/form-data"
-                                class="d-flex gap-3 mt-4 align-items-center">
+                            <form id="chat-form" method="POST" enctype="multipart/form-data" class="d-flex gap-3 mt-4 align-items-center">
                                 <div class="position-relative flex-grow-1">
-                                    <input type="text" name="message" class="form-control bg-dark text-white border-dark 
-                                        shadow-sm rounded-pill ps-4 pe-5 py-2" placeholder="Type your message..."
-                                        id="message-input">
-                                    <label for="file-upload"
-                                        class="position-absolute end-0 top-50 translate-middle-y me-3">
-                                        <i class="fas fa-paperclip text-white-50 cursor-pointer"></i>
+                                    <input type="text" name="message" class="form-control border-primary shadow-sm rounded-pill ps-4 pe-5 py-2" placeholder="Type your message..." id="message-input">
+                                    <label for="file-upload" class="position-absolute end-0 top-50 translate-middle-y me-3 cursor-pointer">
+                                        <i class="fas fa-paperclip text-secondary"></i>
                                     </label>
                                     <input type="file" id="file-upload" name="file" class="d-none">
-                                </div>
-                               
-                                    <span id="file-name" class="text-white-50 small ms-3"></span>
+                                    <span id="file-name" class="position-absolute bottom-0 start-0 ms-3 small text-truncate"></span>
                                 </div>
                                 <button type="submit" class="btn btn-primary rounded-circle p-3 shadow-sm">
                                     <i class="fas fa-paper-plane fs-5"></i>
@@ -239,32 +233,28 @@
                     </div>
 
                     <!-- Profile Tab -->
-                    <div class="tab-pane fade" id="profile">
+                    <div class="tab-pane fade" id="profile-pane">
                         <div class="d-flex align-items-center gap-4 mb-5">
-                            <div class="profile-icon shadow-lg">
+                            <div class="profile-icon shadow-sm">
                                 <i class="fas fa-user text-primary"></i>
                             </div>
                             <div>
-                                <h2 class="mb-1 fw-bold">{{ user.name }}</h2>
-                                <p class="text-white-50 mb-0">{{ user.designation|title }}</p>
+                                <h2 class="mb-1 fw-bold text-dark">{{ user.name }}</h2>
+                                <p class="text-muted mb-0">{{ user.designation|title }}</p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-8">
-                                <div class="card border-0 shadow-sm bg-dark">
+                                <div class="card border-0 shadow-sm">
                                     <div class="card-body p-4">
-                                        <h5 class="card-title fw-bold mb-4">
-                                            <i class="fas fa-info-circle me-2"></i>User Details
-                                        </h5>
+                                        <h5 class="card-title fw-bold mb-4 text-dark"><i class="fas fa-info-circle me-2"></i>User Details</h5>
                                         <div class="list-group list-group-flush">
-                                            <div class="list-group-item bg-transparent text-white 
-                                            border-secondary d-flex align-items-center gap-3">
-                                                <i class="fas fa-envelope fa-fw text-white-50"></i>
+                                            <div class="list-group-item d-flex align-items-center gap-3">
+                                                <i class="fas fa-envelope fa-fw text-secondary"></i>
                                                 {{ user.email }}
                                             </div>
-                                            <div class="list-group-item bg-transparent text-white 
-                                            border-secondary d-flex align-items-center gap-3">
-                                                <i class="fas fa-user-tag fa-fw text-white-50"></i>
+                                            <div class="list-group-item d-flex align-items-center gap-3">
+                                                <i class="fas fa-user-tag fa-fw text-secondary"></i>
                                                 {{ user.designation|title }}
                                             </div>
                                         </div>
@@ -276,27 +266,21 @@
 
                     <!-- Requests Tab -->
                     {% if user.email == 'utsavamistry30@gmail.com' %}
-                    <div class="tab-pane fade" id="requests">
-                        <h4 class="mb-4 fw-bold">
-                            <i class="fas fa-user-clock me-2"></i>Pending Approvals
-                        </h4>
-
+                    <div class="tab-pane fade" id="requests-pane">
+                        <h4 class="mb-4 fw-bold text-dark"><i class="fas fa-user-clock me-2"></i>Pending Approvals</h4>
                         {% if requests %}
                         <div class="list-group shadow-sm">
                             {% for req in requests %}
-                            <div class="list-group-item bg-dark text-white d-flex 
-                            justify-content-between align-items-center border-secondary">
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h6 class="mb-1 fw-bold">{{ req.name }}</h6>
-                                    <small class="text-white-50">{{ req.email }}</small>
+                                    <h6 class="mb-1 fw-bold text-dark">{{ req.name }}</h6>
+                                    <small class="text-muted">{{ req.email }}</small>
                                 </div>
                                 <div class="btn-group shadow-sm">
-                                    <button class="btn btn-outline-success btn-sm px-3 rounded-start"
-                                        data-email="{{ req.email }}">
+                                    <button class="btn btn-outline-success btn-sm px-3 rounded-start" data-email="{{ req.email }}">
                                         <i class="fas fa-check"></i>
                                     </button>
-                                    <button class="btn btn-outline-danger btn-sm px-3 rounded-end"
-                                        data-email="{{ req.email }}">
+                                    <button class="btn btn-outline-danger btn-sm px-3 rounded-end" data-email="{{ req.email }}">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </div>
@@ -304,7 +288,7 @@
                             {% endfor %}
                         </div>
                         {% else %}
-                        <div class="alert alert-dark border-secondary shadow-sm">
+                        <div class="alert alert-light border shadow-sm">
                             <i class="fas fa-info-circle me-2"></i>No pending approval requests
                         </div>
                         {% endif %}
@@ -314,102 +298,110 @@
             </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Chat functionality
-    document.getElementById("file-upload").addEventListener("change", function (e) {
-        const fileName = e.target.files[0]?.name || '';
-        document.getElementById("file-name").textContent = fileName;
-    });
-
-    async function handleChatSubmit(e) {
-        e.preventDefault();
-        const form = e.target;
-        const formData = new FormData(form);
-        const submitBtn = form.querySelector('button[type="submit"]');
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-        try {
-            const response = await fetch("/send_message", {
-                method: "POST",
-                body: formData
-            });
-
-            const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                throw new Error("Invalid server response");
+        // Handle file input change
+        document.getElementById("file-upload").addEventListener("change", function (e) {
+            const fileName = e.target.files[0]?.name || '';
+            const fileNameLabel = document.getElementById("file-name");
+            if (fileNameLabel) {
+                fileNameLabel.textContent = fileName;
             }
+        });
 
-            const data = await response.json();
+        // Submit chat message
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const fileNameLabel = document.getElementById("file-name");
 
-            if (!response.ok || !data.success) {
-                throw new Error(data.error || "Failed to send message");
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            try {
+                const response = await fetch("/send_message", {
+                    method: "POST",
+                    body: formData
+                });
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("Invalid server response");
+                }
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || "Failed to send message");
+                }
+                // Append new message
+                const chatList = document.getElementById("chat-list");
+                if (chatList) {
+                    chatList.insertAdjacentHTML('beforeend', createMessageElement(data.message));
+                    scrollToBottom();
+                }
+                form.reset();
+                if (fileNameLabel) fileNameLabel.textContent = '';
+            } catch (error) {
+                console.error("Chat error:", error);
+                alert(error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane fs-5"></i>';
             }
-
-            // Append new message
-            const chatList = document.getElementById("chat-list");
-            chatList.insertAdjacentHTML('beforeend', createMessageElement(data.message));
-            console.log("New message appended:", data.message);
-            form.reset();
-            document.getElementById("file-name").textContent = '';
-            scrollToBottom();
-        } catch (error) {
-            console.error("Chat error:", error);
-            alert(error.message);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
         }
-    }
 
-    function createMessageElement(message) {
-        const isOwnMessage = message.sender_id === currentUserEmail;
-        const fileHtml = message.file ? `
-            <div class="file-attachment mt-2">
-                <a href="${message.file.url}" target="_blank" class="text-decoration-none">
-                    <i class="fas fa-file me-2"></i>
-                    <span class="file-name">${escapeHtml(message.file.name)}</span>
-                </a>
-            </div>
-        ` : '';
-
-        return `
-            <div class="message-card ${isOwnMessage ? 'own-message' : 'other-message'}">
-                <div class="message-header">
-                    <strong>${escapeHtml(message.sender)}</strong>
-                    <span class="text-muted ms-2">${message.timestamp}</span>
-                    ${message.file ? '<i class="fas fa-paperclip ms-2"></i>' : ''}
+        // Render one message HTML
+        function createMessageElement(message) {
+            const isSelf = message.sender === currentUserEmail;
+            const alignment = isSelf ? 'justify-content-end' : 'justify-content-start';
+            const cardClasses = `message-card${isSelf ? ' self' : ''} p-3 shadow-sm`;
+            const fileHtml = message.file ? `
+                <div class="file-attachment">
+                    <a href="${message.file.url}" target="_blank" class="text-decoration-none d-flex align-items-center gap-2 ${isSelf ? 'text-white' : 'text-primary'}">
+                        <i class="fas fa-file fa-fw"></i>
+                        <span class="file-name">${escapeHtml(message.file.name)}</span>
+                    </a>
                 </div>
-                <div class="message-content">
-                    ${escapeHtml(message.content || '')}
-                    ${fileHtml}
+            ` : '';
+            return `
+            <div class="d-flex mb-3 ${alignment}">
+                <div class="${cardClasses}" style="max-width: 80%">
+                    <div class="message-header d-flex justify-content-between align-items-center small">
+                        <strong>${escapeHtml(isSelf ? 'You' : message.sender)}</strong>
+                        <span>${message.timestamp}</span>
+                    </div>
+                    <div class="message-content">
+                        ${message.content ? `<p class="mb-2">${escapeHtml(message.content)}</p>` : ''}
+                        ${fileHtml}
+                    </div>
                 </div>
-            </div>
-        `;
-    }
+            </div>`;
+        }
 
-    function escapeHtml(unsafe) {
-        if (!unsafe) return '';
-        return unsafe.toString()
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
+        // Prevent XSS
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return unsafe.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
-    function scrollToBottom() {
-        const chatList = document.getElementById("chat-list");
-        chatList.scrollTop = chatList.scrollHeight;
-    }
+        // Scroll to bottom of chat
+        function scrollToBottom() {
+            const chatList = document.getElementById("chat-list");
+            if (chatList) {
+                chatList.scrollTop = chatList.scrollHeight;
+            }
+        }
 
-    // Initialize
-    document.getElementById("chat-form").addEventListener("submit", handleChatSubmit);
-    window.addEventListener('DOMContentLoaded', scrollToBottom);
-    document.getElementById("message-input").focus();
-</script>
+        // Init
+        document.getElementById("chat-form").addEventListener("submit", handleChatSubmit);
+        window.addEventListener('DOMContentLoaded', scrollToBottom);
+        document.getElementById("message-input").focus();
+    </script>
 </body>
-
 </html>
