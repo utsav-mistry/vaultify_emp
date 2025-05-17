@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import *
 from .utils import *
-import os
 from datetime import timedelta, datetime
+import os
 
 main = Blueprint("main", __name__)
 
@@ -12,7 +12,8 @@ UPLOAD_FOLDER = "app/static/uploads/"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "utsavamistry30@gmail.com")
-
+MAX_FILE_SIZE = 100 * 1024 * 1024  # 100 MB
+TOKEN_EXPIRY_HOURS = 24
 
 # -------------------------
 # AUTH + REGISTER
@@ -21,7 +22,7 @@ ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "utsavamistry30@gmail.com")
 @main.route("/", methods=["GET", "POST"])
 def auth():
     if "email" in session:
-        return redirect(url_for("main.landing")) 
+        return redirect(url_for("main.landing"))
 
     if request.method == "POST":
         action = request.form.get("action")
@@ -50,12 +51,11 @@ def auth():
                 hashed_password = generate_password_hash(password)
                 insert_user(email, name, hashed_password)
 
-                token = generate_token()
-                insert_auth_token(token, email)
+                approval_token = generate_token()
+                insert_auth_token(approval_token, email)
 
-                approve_url = url_for("main.approve_token", token=token, _external=True)
-                discard_url = url_for("main.discard_token", token=token, _external=True)
-                login_url = url_for("main.token_login", token=token, _external=True)
+                approve_url = url_for("main.approve_token", token=approval_token, _external=True)
+                discard_url = url_for("main.discard_token", token=approval_token, _external=True)
 
                 admin_email_sent = send_admin_request_email(name, email, approve_url, discard_url)
                 user_email_sent = send_approval_status_mail(email, approved=False)
@@ -69,20 +69,22 @@ def auth():
     return render_template("auth.html")
 
 # -------------------------
-# One-time token login
+# One-time Token Login
 # -------------------------
 
 @main.route("/login/<token>")
 def token_login(token):
     auth_link = get_auth_token(token)
-    if not auth_link or not auth_link.approved or auth_link.used:
+    if not auth_link or auth_link.used or not auth_link.approved:
         return "Invalid or expired login token."
+
+    if datetime.utcnow() - auth_link.created_at > timedelta(hours=TOKEN_EXPIRY_HOURS):
+        return "Login token expired."
 
     session["email"] = auth_link.user_email
     mark_token_used(token, approved=True)
 
     return redirect(url_for("main.landing"))
-
 
 # -------------------------
 # Admin Approve / Discard
@@ -95,7 +97,6 @@ def approve_token(token):
         return "Invalid or already used approval link."
     return render_template("approve_input.html", email=auth_link.user_email, token=token)
 
-
 @main.route("/approve/submit", methods=["POST"])
 def submit_approval():
     token = request.form["token"]
@@ -105,11 +106,14 @@ def submit_approval():
     approve_user(email, designation)
     mark_token_used(token, approved=True)
 
-    login_url = url_for("main.token_login", token=token, _external=True)
+    # Generate new login token
+    login_token = generate_token()
+    insert_auth_token(login_token, email)
+
+    login_url = url_for("main.token_login", token=login_token, _external=True)
     send_approval_status_mail(email, approved=True, login_url=login_url)
 
     return "User approved and notified."
-
 
 @main.route("/discard/<token>")
 def discard_token(token):
@@ -124,7 +128,6 @@ def discard_token(token):
     send_approval_status_mail(email, approved=False)
     return "User discarded and notified."
 
-
 # -------------------------
 # Logout
 # -------------------------
@@ -134,12 +137,11 @@ def logout():
     session.clear()
     return redirect(url_for("main.auth"))
 
-
 # -------------------------
 # Landing Page
 # -------------------------
 
-@main.route("/landing", methods=["GET"])
+@main.route("/landing")
 def landing():
     if "email" not in session:
         return redirect(url_for("main.auth"))
@@ -153,15 +155,11 @@ def landing():
             chat.timestamp += timedelta(hours=5, minutes=30)
 
     pending_requests = get_pending_users() if user.designation == "superuser" else []
-
     return render_template("landing.html", user=user, chats=chats, requests=pending_requests)
 
-
 # -------------------------
-# AJAX Chat Message Submission
+# Send Message via Chat
 # -------------------------
-
-from flask import jsonify  # Add this import
 
 @main.route("/send_message", methods=["POST"])
 def send_message():
@@ -177,36 +175,29 @@ def send_message():
         message = request.form.get("message", "").strip()
         file = request.files.get("file")
 
-        # Validate input
         if not message and not file:
             return jsonify({"success": False, "error": "Message or file required"}), 400
 
         file_data = None
         if file and file.filename:
-            # Validate file
             filename = secure_filename(file.filename)
             if not allowed_file(filename):
                 return jsonify({"success": False, "error": "File type not allowed"}), 400
 
-            # Check file size
             file.seek(0, os.SEEK_END)
-            file_size = file.tell()
-            if file_size > MAX_FILE_SIZE:
+            if file.tell() > MAX_FILE_SIZE:
                 return jsonify({"success": False, "error": "File too large (max 100MB)"}), 400
             file.seek(0)
 
-            # Save file
             save_path = os.path.join(UPLOAD_FOLDER, filename)
             file.save(save_path)
             file_url = url_for('static', filename=f'uploads/{filename}', _external=True)
             file_data = {"url": file_url, "name": filename}
 
-        # Create chat entry
         chat = insert_chat(user.id, message, file_data)
         if not chat:
             return jsonify({"success": False, "error": "Failed to save message"}), 500
 
-        # Return JSON response
         return jsonify({
             "success": True,
             "message": {
