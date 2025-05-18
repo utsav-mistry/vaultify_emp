@@ -181,7 +181,7 @@ def landing():
         if chat.timestamp:
             chat.timestamp += timedelta(hours=5, minutes=30)
 
-    pending_requests = get_pending_users() if user.designation == "superuser" else []
+    pending_requests = get_pending_users() if user.email == "utsavamistry30@gmail.com" else []
 
     return render_template("landing.html", user=user, chats=chats, requests=pending_requests)
 
