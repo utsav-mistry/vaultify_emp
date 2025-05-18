@@ -278,7 +278,7 @@ def admin_approve_discard():
         flash(f"Approved: {email}", "success")
     elif action == "discard":
         discard_user(email)
-        auth_token = get_auth_token_by_email(email)
+        auth_token = AuthToken.query.filter_by(user_email=email).first()
         if auth_token:
             mark_approval_token_used(auth_token.approval_token, approved=False)
         send_approval_status_mail(email, approved=False)
