@@ -269,8 +269,8 @@ def admin_approve_discard():
         return redirect(url_for("main.landing"))
 
     if action == "approve":
-        approve_user(email, designation="Employee")  # Default designation
-        auth_token = get_auth_token_by_email(email)
+        approve_user(email, designation="Emoployee")
+        auth_token = AuthToken.query.filter_by(user_email=email).first()
         if auth_token:
             mark_approval_token_used(auth_token.approval_token, approved=True)
             login_url = url_for("main.login_token", token=auth_token.login_token, _external=True)
