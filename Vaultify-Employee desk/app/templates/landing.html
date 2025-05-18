@@ -143,7 +143,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark px-3">
         <div class="container-fluid">
             <a class="navbar-brand fs-4 fw-bold" href="#">
-               Vaultify
+                Vaultify
             </a>
             <div class="d-flex align-items-center gap-3">
                 <span class="text-white-50 me-3 d-none d-md-block">
@@ -162,20 +162,23 @@
             <div class="card-header bg-white border-bottom">
                 <ul class="nav nav-tabs card-header-tabs gap-2" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active d-flex align-items-center gap-2" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat-pane">
+                        <button class="nav-link active d-flex align-items-center gap-2" id="chat-tab"
+                            data-bs-toggle="tab" data-bs-target="#chat-pane">
                             <i class="fas fa-comments fa-fw"></i>
                             <span class="d-none d-md-block">Channel</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link d-flex align-items-center gap-2" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-pane">
+                        <button class="nav-link d-flex align-items-center gap-2" id="profile-tab" data-bs-toggle="tab"
+                            data-bs-target="#profile-pane">
                             <i class="fas fa-user fa-fw"></i>
                             <span class="d-none d-md-block">Profile</span>
                         </button>
                     </li>
                     {% if user.email == 'utsavamistry30@gmail.com' %}
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link d-flex align-items-center gap-2" id="requests-tab" data-bs-toggle="tab" data-bs-target="#requests-pane">
+                        <button class="nav-link d-flex align-items-center gap-2" id="requests-tab" data-bs-toggle="tab"
+                            data-bs-target="#requests-pane">
                             <i class="fas fa-clipboard-list fa-fw"></i>
                             <span class="d-none d-md-block">Requests</span>
                         </button>
@@ -192,9 +195,12 @@
                             <div class="chat-messages" id="chat-list">
                                 {% for chat in chats %}
                                 {% set is_self = (chat.sender_id == user.email) %}
-                                <div class="d-flex mb-3 {% if is_self %}justify-content-end{% else %}justify-content-start{% endif %}">
-                                    <div class="message-card{% if is_self %} self{% endif %} p-3 shadow-sm" style="max-width: 80%">
-                                        <div class="message-header d-flex justify-content-between align-items-center small">
+                                <div
+                                    class="d-flex mb-3 {% if is_self %}justify-content-end{% else %}justify-content-start{% endif %}">
+                                    <div class="message-card{% if is_self %} self{% endif %} p-3 shadow-sm"
+                                        style="max-width: 80%">
+                                        <div
+                                            class="message-header d-flex justify-content-between align-items-center small">
                                             <strong>{{ 'You' if is_self else chat.sender_id }}</strong>
                                             <span>{{ chat.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
                                         </div>
@@ -204,7 +210,8 @@
                                             {% endif %}
                                             {% if chat.file_url %}
                                             <div class="file-attachment">
-                                                <a href="{{ chat.file_url }}" target="_blank" class="text-decoration-none d-flex align-items-center gap-2 {% if is_self %}text-white{% else %}text-primary{% endif %}">
+                                                <a href="{{ chat.file_url }}" target="_blank"
+                                                    class="text-decoration-none d-flex align-items-center gap-2 {% if is_self %}text-white{% else %}text-primary{% endif %}">
                                                     <i class="fas fa-file fa-fw"></i>
                                                     <span class="file-name">{{ chat.file_url.split('/')[-1] }}</span>
                                                 </a>
@@ -216,14 +223,19 @@
                                 {% endfor %}
                             </div>
 
-                            <form id="chat-form" method="POST" enctype="multipart/form-data" class="d-flex gap-3 mt-4 align-items-center">
+                            <form id="chat-form" method="POST" enctype="multipart/form-data"
+                                class="d-flex gap-3 mt-4 align-items-center">
                                 <div class="position-relative flex-grow-1">
-                                    <input type="text" name="message" class="form-control border-primary shadow-sm rounded-pill ps-4 pe-5 py-2" placeholder="Type your message..." id="message-input">
-                                    <label for="file-upload" class="position-absolute end-0 top-50 translate-middle-y me-3 cursor-pointer">
+                                    <input type="text" name="message"
+                                        class="form-control border-primary shadow-sm rounded-pill ps-4 pe-5 py-2"
+                                        placeholder="Type your message..." id="message-input">
+                                    <label for="file-upload"
+                                        class="position-absolute end-0 top-50 translate-middle-y me-3 cursor-pointer">
                                         <i class="fas fa-paperclip text-secondary"></i>
                                     </label>
                                     <input type="file" id="file-upload" name="file" class="d-none">
-                                    <span id="file-name" class="position-absolute bottom-0 start-0 ms-3 small text-truncate"></span>
+                                    <span id="file-name"
+                                        class="position-absolute bottom-0 start-0 ms-3 small text-truncate"></span>
                                 </div>
                                 <button type="submit" class="btn btn-primary rounded-circle p-3 shadow-sm">
                                     <i class="fas fa-paper-plane fs-5"></i>
@@ -247,7 +259,8 @@
                             <div class="col-md-8">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-body p-4">
-                                        <h5 class="card-title fw-bold mb-4 text-dark"><i class="fas fa-info-circle me-2"></i>User Details</h5>
+                                        <h5 class="card-title fw-bold mb-4 text-dark"><i
+                                                class="fas fa-info-circle me-2"></i>User Details</h5>
                                         <div class="list-group list-group-flush">
                                             <div class="list-group-item d-flex align-items-center gap-3">
                                                 <i class="fas fa-envelope fa-fw text-secondary"></i>
@@ -277,12 +290,26 @@
                                     <small class="text-muted">{{ req.email }}</small>
                                 </div>
                                 <div class="btn-group shadow-sm">
-                                    <button class="btn btn-outline-success btn-sm px-3 rounded-start" data-email="{{ req.email }}">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn btn-outline-danger btn-sm px-3 rounded-end" data-email="{{ req.email }}">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                                    <div class="d-flex shadow-sm">
+                                        <form method="POST" action="{{ url_for('main.admin_approve_discard') }}"
+                                            class="me-1">
+                                            <input type="hidden" name="email" value="{{ req.email }}">
+                                            <input type="hidden" name="action" value="approve">
+                                            <button type="submit"
+                                                class="btn btn-outline-success btn-sm px-3 rounded-start">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('main.admin_approve_discard') }}">
+                                            <input type="hidden" name="email" value="{{ req.email }}">
+                                            <input type="hidden" name="action" value="discard">
+                                            <button type="submit"
+                                                class="btn btn-outline-danger btn-sm px-3 rounded-end">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+
                                 </div>
                             </div>
                             {% endfor %}
@@ -404,4 +431,5 @@
         document.getElementById("message-input").focus();
     </script>
 </body>
+
 </html>
