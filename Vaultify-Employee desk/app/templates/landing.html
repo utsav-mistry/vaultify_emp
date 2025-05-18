@@ -277,7 +277,7 @@
                         </div>
                     </div>
 
-                    <!-- Requests Tab -->
+                     <!-- Requests Tab -->
                     {% if user.email == 'utsavamistry30@gmail.com' %}
                     <div class="tab-pane fade" id="requests-pane">
                         <h4 class="mb-4 fw-bold text-dark"><i class="fas fa-user-clock me-2"></i>Pending Approvals</h4>
@@ -290,21 +290,12 @@
                                     <small class="text-muted">{{ req.email }}</small>
                                 </div>
                                 <div class="btn-group shadow-sm">
-                                    <div class="d-flex shadow-sm">
-                                        <form method="POST" action="{{ url_for('main.admin_approve_discard') }}">
-                                            <input type="hidden" name="email" value="{{ req.email }}">
-                                            <div class="btn-group shadow-sm">
-                                                <button class="btn btn-outline-success btn-sm px-3 rounded-start"
-                                                    name="action" value="approve">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                                <button class="btn btn-outline-danger btn-sm px-3 rounded-end"
-                                                    name="action" value="discard">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
+                                    <button class="btn btn-outline-success btn-sm px-3 rounded-start" data-email="{{ req.email }}">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm px-3 rounded-end" data-email="{{ req.email }}">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             </div>
                             {% endfor %}
@@ -316,6 +307,8 @@
                         {% endif %}
                     </div>
                     {% endif %}
+
+
                 </div>
             </div>
         </div>
