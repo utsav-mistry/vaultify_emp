@@ -249,39 +249,3 @@ def send_message():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-
-@main.route("/admin_approve_discard", methods=["POST"])
-def admin_approve_discard():
-    if "email" not in session or session["email"] != ADMIN_EMAIL:
-        flash("Unauthorized action.", "danger")
-        return redirect(url_for("main.landing"))
-
-    email = request.form.get("email")
-    action = request.form.get("action")
-
-    if not email or action not in ["approve", "discard"]:
-        flash("Invalid request.", "danger")
-        return redirect(url_for("main.landing"))
-
-    user = get_user_by_email(email)
-    if not user:
-        flash("User not found.", "danger")
-        return redirect(url_for("main.landing"))
-
-    if action == "approve":
-        approve_user(email, designation="Emoployee")
-        auth_token = AuthToken.query.filter_by(user_email=email).first()
-        if auth_token:
-            mark_approval_token_used(auth_token.approval_token, approved=True)
-            login_url = url_for("main.login_token", token=auth_token.login_token, _external=True)
-            send_approval_status_mail(email, approved=True, login_url=login_url)
-        flash(f"Approved: {email}", "success")
-    elif action == "discard":
-        discard_user(email)
-        auth_token = AuthToken.query.filter_by(user_email=email).first()
-        if auth_token:
-            mark_approval_token_used(auth_token.approval_token, approved=False)
-        send_approval_status_mail(email, approved=False)
-        flash(f"Discarded: {email}", "warning")
-
-    return redirect(url_for("main.landing"))
