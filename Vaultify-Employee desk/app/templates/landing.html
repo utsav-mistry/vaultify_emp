@@ -291,25 +291,20 @@
                                 </div>
                                 <div class="btn-group shadow-sm">
                                     <div class="d-flex shadow-sm">
-                                        <form method="POST" action="{{ url_for('main.admin_approve_discard') }}"
-                                            class="me-1">
-                                            <input type="hidden" name="email" value="{{ req.email }}">
-                                            <input type="hidden" name="action" value="approve">
-                                            <button type="submit"
-                                                class="btn btn-outline-success btn-sm px-3 rounded-start">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                        </form>
                                         <form method="POST" action="{{ url_for('main.admin_approve_discard') }}">
                                             <input type="hidden" name="email" value="{{ req.email }}">
-                                            <input type="hidden" name="action" value="discard">
-                                            <button type="submit"
-                                                class="btn btn-outline-danger btn-sm px-3 rounded-end">
-                                                <i class="fas fa-times"></i>
-                                            </button>
+                                            <div class="btn-group shadow-sm">
+                                                <button class="btn btn-outline-success btn-sm px-3 rounded-start"
+                                                    name="action" value="approve">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm px-3 rounded-end"
+                                                    name="action" value="discard">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
                                         </form>
                                     </div>
-
                                 </div>
                             </div>
                             {% endfor %}
