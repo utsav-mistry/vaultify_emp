@@ -1,4 +1,5 @@
-# Vaultify Employee Page
+# Vaultify Employee Page (Deprecated)
+#### Reason - Resource Management
 
 **Private Internal Software – Not for Public Distribution**
 
